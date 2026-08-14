@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Draft Order Test</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Barlow+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EDE7D8;
+  --paper-dark:#E1D9C4;
+  --ink:#1C2541;
+  --turf:#35633D;
+  --stamp:#B5502D;
+  --graphite:#57534E;
+  --gold:#B4892B;
+  --line:#c9bfa4;
+  --danger:#A3311C;
+  --card-shadow: 0 1px 0 rgba(28,37,65,0.08), 0 12px 24px -12px rgba(28,37,65,0.35);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(28,37,65,0.035) 28px),
+    var(--paper);
+  color:var(--ink);
+  font-family:'Barlow Condensed', sans-serif;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  padding:32px 16px 64px;
+}
+.wrap{width:100%;max-width:640px;}
+
+.masthead{text-align:center;margin-bottom:22px;}
+.masthead .eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.18em;
+  color:var(--stamp);font-weight:600;text-transform:uppercase;
+}
+.masthead h1{
+  font-family:'Special Elite', monospace;font-size:clamp(28px,6vw,40px);margin:6px 0 4px;letter-spacing:0.01em;
+}
+.masthead .sub{color:var(--graphite);font-size:17px;}
+
+.dossier{
+  background:var(--paper-dark);border:1px solid var(--line);border-radius:4px;
+  box-shadow:var(--card-shadow);position:relative;overflow:hidden;
+}
+.dossier::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:6px;
+  background:repeating-linear-gradient(90deg, var(--ink) 0 14px, transparent 14px 22px);opacity:0.5;
+}
+
+.clockbar{padding:16px 20px 0;}
+.clock-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.clock-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:0.1em;color:var(--graphite);text-transform:uppercase;}
+.clock-digits{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:700;color:var(--ink);}
+.clock-digits.urgent{color:var(--danger);}
+.clock-track{height:6px;background:var(--line);border-radius:3px;overflow:hidden;}
+.clock-fill{height:100%;background:var(--turf);width:100%;transition:width 1s linear, background .3s ease;}
+.clock-fill.urgent{background:var(--danger);}
+
+.panel{padding:22px 24px 28px;user-select:none;}
+
+.section-tag{
+  display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+  letter-spacing:0.12em;color:#fff;background:var(--ink);padding:4px 9px;border-radius:3px;
+  margin-bottom:14px;text-transform:uppercase;
+}
+.section-tag.aptitude{background:var(--stamp);}
+.section-tag.iq{background:var(--turf);}
+.section-tag.film{background:var(--gold);}
+
+h2.prompt{font-family:'Barlow Condensed', sans-serif;font-weight:600;font-size:23px;line-height:1.25;margin:0 0 16px;}
+
+.svg-wrap{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:8px;margin-bottom:16px;}
+.svg-wrap svg{display:block;width:100%;height:auto;}
+
+.options{display:flex;flex-direction:column;gap:9px;}
+.opt{
+  text-align:left;font-family:'Barlow Condensed', sans-serif;font-size:18px;padding:12px 16px;
+  background:var(--paper);border:1px solid var(--line);border-radius:4px;cursor:pointer;
+  transition:border-color .12s ease, background .12s ease;
+}
+.opt:hover{border-color:var(--ink);}
+.opt.selected{border-color:var(--turf);background:#e4ecdf;font-weight:600;}
+.opt:disabled{cursor:default;opacity:0.7;}
+.opt:focus-visible{outline:2px solid var(--stamp);outline-offset:2px;}
+
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+.count{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--graphite);}
+button.primary{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;letter-spacing:0.06em;
+  text-transform:uppercase;background:var(--ink);color:var(--paper);border:none;padding:12px 22px;
+  border-radius:3px;cursor:pointer;
+}
+button.primary:disabled{opacity:0.35;cursor:not-allowed;}
+button.primary:hover:not(:disabled){background:var(--stamp);}
+
+input[type=text],input[type=number]{
+  width:100%;font-family:'Barlow Condensed',sans-serif;font-size:20px;padding:12px 14px;
+  border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);margin:6px 0 20px;
+}
+input[type=text]:focus-visible,input[type=number]:focus-visible{outline:2px solid var(--stamp);outline-offset:2px;}
+.field-label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.08em;color:var(--graphite);text-transform:uppercase;}
+
+.intro-copy{color:var(--graphite);font-size:18px;line-height:1.5;margin-bottom:6px;}
+.intro-copy b{color:var(--ink);}
+.rules{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--graphite);background:var(--paper);
+  border:1px dashed var(--line);border-radius:4px;padding:12px 14px;margin:18px 0 4px;line-height:1.75;
+}
+.locked-msg{
+  font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--danger);margin-top:10px;line-height:1.6;
+}
+
+.grade-block{display:flex;gap:18px;align-items:center;padding-bottom:18px;border-bottom:1px dashed var(--line);margin-bottom:18px;}
+.grade-badge{
+  font-family:'Special Elite',monospace;font-size:44px;width:84px;height:84px;flex:none;border:3px solid var(--stamp);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;transform:rotate(-6deg);color:var(--stamp);
+}
+.grade-meta .proj{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:0.1em;color:var(--graphite);text-transform:uppercase;}
+.grade-meta .proj-value{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;color:var(--ink);}
+.grade-meta .score-line{font-size:15px;color:var(--graphite);margin-top:2px;}
+.stat-strip{display:flex;gap:18px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--graphite);margin-bottom:18px;}
+.stat-strip b{color:var(--ink);display:block;font-size:16px;}
+
+.cat-row{margin-bottom:12px;}
+.cat-row .lbl{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--graphite);margin-bottom:4px;}
+.bar-track{height:8px;background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;background:var(--turf);}
+
+.board{margin-top:26px;}
+.board h3{font-family:'Special Elite',monospace;font-size:18px;margin:0 0 10px;}
+.board-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-bottom:1px solid var(--line);font-size:16px;}
+.board-row .rank{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--stamp);width:22px;}
+.board-row .nm{flex:1;font-weight:600;}
+.board-row .sc{font-family:'IBM Plex Mono',monospace;color:var(--graphite);}
+.board-status{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--graphite);margin-top:10px;}
+
+.admin-block{margin-top:18px;}
+.admin-block .row2{display:flex;gap:10px;}
+.admin-block .row2 input{width:50%;}
+
+footer.credit{text-align:center;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--graphite);margin-top:18px;opacity:0.7;}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead">
+    <div class="eyebrow">Confidential &middot; League Personnel Dept.</div>
+    <h1>Draft Order Test</h1>
+    <div class="sub">Highest score picks first. The clock is undefeated.</div>
+  </div>
+  <div class="dossier">
+    <div class="clockbar" id="clockbar" style="display:none;">
+      <div class="clock-row">
+        <span class="clock-label" id="sectionLabel">&nbsp;</span>
+        <span class="clock-digits" id="clockDigits">4:00</span>
+      </div>
+      <div class="clock-track"><div class="clock-fill" id="clockFill"></div></div>
+    </div>
+    <div class="panel" id="panel"></div>
+  </div>
+  <footer class="credit">Pick 1 already assigned &middot; this sets picks 2&ndash;12<br><a href="#" id="adminLink" style="color:var(--graphite);opacity:0.6;text-decoration:none;">Commissioner access</a></footer>
+</div>
+
+<script>
+const TIME_LIMIT_SECONDS = 240; // 4:00 -- edit this to tune difficulty
+const TIER_COUNT = 5;           // pacing blocks used to balance difficulty across the clock
+const ADMIN_PASSCODE = 'gap2026'; // change this to whatever you like -- keep it to yourself
+const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwJwUHYgNqDnfB3vafDRnTcT4sjZuAwMnQX71V1uuLgCetEiy34Eeiv1Y2rKpth-_ht7w/exec';
+
+// ---------- Question bank ----------
+// difficulty: 1 = easy, 2 = medium, 3 = hard
+const QUESTIONS = [
+  // APTITUDE (15)
+  {section:'aptitude', difficulty:2, prompt:'Complete the sequence: 2, 6, 12, 20, 30, ?', options:['36','40','42','48'], answer:2},
+  {section:'aptitude', difficulty:1, prompt:'Complete the sequence: 1, 4, 9, 16, 25, ?', options:['30','32','36','49'], answer:2},
+  {section:'aptitude', difficulty:1, prompt:'A drive starts at the offense\u2019s own 20-yard line. They gain 8, lose 5, then gain 15. What yard line are they on now?', options:['33','35','38','40'], answer:2},
+  {section:'aptitude', difficulty:3, prompt:'"All Pro Bowlers are talented. Some talented players are underpaid. Therefore, some Pro Bowlers are underpaid." Is this conclusion true, false, or uncertain?', options:['True','False','Uncertain'], answer:2},
+  {section:'aptitude', difficulty:2, prompt:'A kicker makes 18 of 25 field goal attempts. What is his field goal percentage?', options:['66%','70%','72%','75%'], answer:2},
+  {section:'aptitude', difficulty:1, prompt:'Which of these does NOT belong with the others?', options:['Blitz','Zone','Man','Sweep'], answer:3},
+  {section:'aptitude', difficulty:1, prompt:'Paper is to Tree as Bread is to ___', options:['Oven','Wheat','Butter','Flour'], answer:1},
+  {section:'aptitude', difficulty:2, prompt:'If 3 workers can build a fence in 6 days, how many days would it take 6 workers at the same rate?', options:['2','3','4','12'], answer:1},
+  {section:'aptitude', difficulty:1, prompt:'Choose the word most nearly OPPOSITE of "Frugal"', options:['Cautious','Thrifty','Wasteful','Modest'], answer:2},
+  {section:'aptitude', difficulty:1, prompt:'A recipe calls for 2 cups of flour for every 3 eggs. How many cups of flour for 12 eggs?', options:['6','8','9','12'], answer:1},
+  {section:'aptitude', difficulty:3, prompt:'John is twice as old as Mary. In 5 years, John will be 31. How old is Mary now?', options:['11','13','15','18'], answer:1},
+  {section:'aptitude', difficulty:2, prompt:'Which number does NOT belong: 8, 27, 64, 90, 125', options:['27','64','90','125'], answer:2},
+  {section:'aptitude', difficulty:3, prompt:'If some Bloops are Razzles, and all Razzles are Lazzles, are all Bloops definitely Lazzles?', options:['Yes','No','Cannot be determined'], answer:2},
+  {section:'aptitude', difficulty:2, prompt:'A team\u2019s win percentage is .750 after 12 games. How many games have they won?', options:['8','9','10','11'], answer:1},
+  {section:'aptitude', difficulty:1, prompt:'Which word is spelled correctly?', options:['Recieve','Occured','Defense','Seperate'], answer:2},
+
+  // FOOTBALL IQ / TRIVIA (21)
+  {section:'iq', difficulty:2, prompt:'What year was Super Bowl I played?', options:['1965','1967','1969','1970'], answer:1},
+  {section:'iq', difficulty:1, prompt:'How many points is a safety worth?', options:['1','2','3','6'], answer:1},
+  {section:'iq', difficulty:1, prompt:'How many players from each team are on the field during a normal play?', options:['9','10','11','12'], answer:2},
+  {section:'iq', difficulty:1, prompt:'What is the trophy awarded to the Super Bowl champion called?', options:['The Halas Trophy','The Vince Lombardi Trophy','The Commissioner\u2019s Cup','The George Halas Cup'], answer:1},
+  {section:'iq', difficulty:1, prompt:'How many yards separate the two goal lines on an NFL field (not counting end zones)?', options:['90','100','110','120'], answer:1},
+  {section:'iq', difficulty:2, prompt:'Which two franchises are tied for the most Super Bowl wins?', options:['Cowboys & 49ers','Patriots & Steelers','Packers & Giants','Broncos & Raiders'], answer:1},
+  {section:'iq', difficulty:1, prompt:'What is it called when a QB under center immediately throws the ball into the ground to legally stop the clock?', options:['A spike','A grounding','A kill','A dump'], answer:0},
+  {section:'iq', difficulty:1, prompt:'How many downs does an offense get to gain 10 yards for a first down?', options:['3','4','5','6'], answer:1},
+  {section:'iq', difficulty:2, prompt:'How many rounds are in the modern NFL Draft?', options:['5','6','7','8'], answer:2},
+  {section:'iq', difficulty:2, prompt:'How many regular season games are on an NFL team\u2019s schedule (current format)?', options:['16','17','18','20'], answer:1},
+  {section:'iq', difficulty:3, prompt:'Which league merged with the NFL in 1970?', options:['USFL','XFL','AFL','WFL'], answer:2},
+  {section:'iq', difficulty:1, prompt:'What color flag does an official throw to signal a penalty?', options:['Red','Orange','White','Yellow'], answer:3},
+  {section:'iq', difficulty:1, prompt:'How long is one quarter of an NFL game, in minutes?', options:['12','15','18','20'], answer:1},
+  {section:'iq', difficulty:1, prompt:'How many timeouts does each team get per half?', options:['2','3','4','5'], answer:1},
+  {section:'iq', difficulty:3, prompt:'What is the minimum number of offensive players required on the line of scrimmage at the snap?', options:['5','6','7','8'], answer:2},
+  {section:'iq', difficulty:2, prompt:'What single stat combines completion %, yards per attempt, TDs, and INTs into one number?', options:['QBR','Passer Rating','Efficiency Index','Total QBR'], answer:1},
+  {section:'iq', difficulty:1, prompt:'What award is given annually to the league\u2019s best overall player?', options:['Offensive Player of the Year','NFL MVP','Pro Bowl MVP','Comeback Player of the Year'], answer:1},
+  {section:'iq', difficulty:2, prompt:'What Ohio city is home to the Pro Football Hall of Fame?', options:['Columbus','Cincinnati','Canton','Cleveland'], answer:2},
+  {section:'iq', difficulty:2, prompt:'What is the standard width of an NFL football field, in yards?', options:['50','53 1/3','60','65'], answer:1},
+  {section:'iq', difficulty:2, prompt:'How many teams currently make the NFL playoffs each season?', options:['12','14','16','10'], answer:1},
+  {section:'iq', difficulty:1, prompt:'What is it called when the offense fails to gain the required yards on 4 tries and the ball changes possession on the spot?', options:['Turnover on downs','Punt','Safety','Forfeiture'], answer:0},
+
+  // FILM STUDY -- OFFENSE (6)
+  {section:'film', difficulty:1, prompt:'Identify the offensive formation shown below:', svg:'off_i', options:['I-Formation','Shotgun Spread','Empty Backfield','Wildcat'], answer:0},
+  {section:'film', difficulty:2, prompt:'Identify the offensive formation shown below:', svg:'off_shotgun', options:['I-Formation','Shotgun (4-Wide)','Pistol','Singleback'], answer:1},
+  {section:'film', difficulty:2, prompt:'Identify the offensive formation shown below:', svg:'off_singleback', options:['Singleback (Trips)','I-Formation','Empty Backfield','Wildcat'], answer:0},
+  {section:'film', difficulty:3, prompt:'Identify the offensive formation shown below:', svg:'off_pistol', options:['Shotgun','Pistol','I-Formation','Wildcat'], answer:1},
+  {section:'film', difficulty:2, prompt:'Identify the offensive formation shown below \u2014 note there is no running back in the backfield:', svg:'off_empty', options:['Empty Backfield','Pistol','Singleback','I-Formation'], answer:0},
+  {section:'film', difficulty:3, prompt:'Identify the offensive formation shown below \u2014 note the unconventional backfield with no traditional QB:', svg:'off_wildcat', options:['Shotgun','Singleback','Wildcat','Pistol'], answer:2},
+
+  // FILM STUDY -- DEFENSE (8)
+  {section:'film', difficulty:1, prompt:'Identify the defensive front shown below:', svg:'front43', options:['4-3 Defense','3-4 Defense','Nickel Defense','Dime Defense'], answer:0},
+  {section:'film', difficulty:2, prompt:'Identify the defensive front shown below:', svg:'front34', options:['4-3 Defense','3-4 Defense','46 Defense','Nickel Defense'], answer:1},
+  {section:'film', difficulty:2, prompt:'Identify the defensive personnel package shown below (count the defensive backs):', svg:'nickel', options:['Base Defense','Nickel Defense','Dime Defense','Goal Line Defense'], answer:1},
+  {section:'film', difficulty:3, prompt:'Identify the defensive personnel package shown below (count the defensive backs):', svg:'dime', options:['Nickel Defense','Dime Defense','Quarter Defense','Base 4-3'], answer:1},
+  {section:'film', difficulty:2, prompt:'Identify the pass coverage shell shown below:', svg:'cover2', options:['Cover 1 Man','Cover 2 Zone','Cover 3 Zone','Cover 0 Blitz'], answer:1},
+  {section:'film', difficulty:3, prompt:'Identify the pass coverage shown below (one deep-middle safety, tight man coverage underneath):', svg:'cover1', options:['Cover 1 Man','Cover 2 Zone','Cover 3 Zone','Cover 4'], answer:0},
+  {section:'film', difficulty:3, prompt:'Identify the pass coverage shown below (three defenders split deep, dividing the field into thirds):', svg:'cover3', options:['Cover 1 Man','Cover 2 Zone','Cover 3 Zone','Cover 0 Blitz'], answer:2},
+  {section:'film', difficulty:1, prompt:'Identify the defensive package shown below \u2014 note the crowded 6-man line with no deep safety help:', svg:'goalline', options:['Nickel Defense','Dime Defense','Goal Line Defense','Cover 2'], answer:2},
+];
+
+const SECTION_META = {
+  aptitude:{label:'Aptitude', cls:'aptitude'},
+  iq:{label:'Football IQ', cls:'iq'},
+  film:{label:'Film Study', cls:'film'}
+};
+
+// ---------- SVG diagram builders ----------
+function dot(x,y,r,fill){return `<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}"/>`;}
+function sq(x,y,s,fill){return `<rect x="${x-s/2}" y="${y-s/2}" width="${s}" height="${s}" fill="${fill}" rx="2"/>`;}
+
+function defField(inner){
+  return `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="240" fill="var(--paper)"/>
+    <line x1="20" y1="172" x2="380" y2="172" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 5" opacity="0.55"/>
+    ${[100,150,200,250,300].map(x=>sq(x,196,16,'var(--turf)')).join('')}
+    ${dot(200,222,7,'var(--graphite)')}
+    ${inner}
+  </svg>`;
+}
+function offField(inner){
+  return `<svg viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+    <rect width="400" height="240" fill="var(--paper)"/>
+    <line x1="20" y1="72" x2="380" y2="72" stroke="var(--ink)" stroke-width="2" stroke-dasharray="6 5" opacity="0.55"/>
+    ${[100,150,200,250,300].map(x=>sq(x,95,16,'var(--stamp)')).join('')}
+    ${inner}
+  </svg>`;
+}
+
+const FORMATIONS = {
+  front43: defField(
+    [110,160,240,290].map(x=>dot(x,145,9,'var(--ink)')).join('') +
+    [140,200,260].map(x=>dot(x,102,8,'var(--stamp)')).join('') +
+    [60,340].map(x=>dot(x,60,8,'var(--gold)')).join('') +
+    [160,240].map(x=>dot(x,32,8,'var(--gold)')).join('')
+  ),
+  front34: defField(
+    [150,200,250].map(x=>dot(x,145,9,'var(--ink)')).join('') +
+    [110,170,230,290].map(x=>dot(x,102,8,'var(--stamp)')).join('') +
+    [60,340].map(x=>dot(x,60,8,'var(--gold)')).join('') +
+    [160,240].map(x=>dot(x,32,8,'var(--gold)')).join('')
+  ),
+  nickel: defField(
+    [110,160,240,290].map(x=>dot(x,145,9,'var(--ink)')).join('') +
+    [170,230].map(x=>dot(x,102,8,'var(--stamp)')).join('') +
+    [60,340].map(x=>dot(x,60,8,'var(--gold)')).join('') +
+    dot(200,72,8,'var(--gold)') +
+    [160,240].map(x=>dot(x,32,8,'var(--gold)')).join('')
+  ),
+  dime: defField(
+    [110,160,240,290].map(x=>dot(x,145,9,'var(--ink)')).join('') +
+    dot(200,102,8,'var(--stamp)') +
+    [60,340].map(x=>dot(x,60,8,'var(--gold)')).join('') +
+    [170,230].map(x=>dot(x,72,8,'var(--gold)')).join('') +
+    [160,240].map(x=>dot(x,32,8,'var(--gold)')).join('')
+  ),
+  cover2: defField(
+    [110,160,240,290].map(x=>dot(x,145,9,'var(--ink)')).join('') +
+    [140,200,260].map(x=>dot(x,102,8,'var(--stamp)')).join('') +
+    [70,330].map(x=>dot(x,80,8,'var(--gold)')).join('') +
+    [140,260].map(x=>dot(x,28,9,'var(--gold)')).join('') +
+    `<path d="M 20 30 A 180 30 0 0 1 200 30" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6"/>` +
+    `<path d="M 200 30 A 180 30 0 0 1 380 30" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-dasharray="4 4" opacity="0.6"/>`
+  ),
+  cover1: defField(
+    [110,160,240,290].map(x=>dot(x,145,9,'var(--ink)')).join('') +
+    [140,200,260].map(x=>dot(x,102,8,'var(--stamp)')).join('') +
+    [55,345].map(x=>dot(x,90,8,'var(--gold)')).join('') +
+    dot(200,100,7,'var(--gold)') +
+    dot(200,25,9,'var(--gold)')
+  ),
+  cover3: defField(
+    [110,160,240,290].map(x=>dot(x,145,9,'var(--ink)')).join('') +
+    [140,200,260].map(x=>dot(x,102,8,'var(--stamp)')).join('') +
+    dot(200,80,7,'var(--gold)') +
+    [70,330].map(x=>dot(x,35,9,'var(--gold)')).join('') +
+    dot(200,22,9,'var(--gold)')
+  ),
+  goalline: defField(
+    [90,130,170,230,270,310].map(x=>dot(x,148,9,'var(--ink)')).join('') +
+    dot(200,110,8,'var(--stamp)') +
+    [70,330].map(x=>dot(x,90,8,'var(--gold)')).join('') +
+    [160,240].map(x=>dot(x,75,8,'var(--gold)')).join('')
+  ),
+  off_i: offField(
+    dot(40,95,8,'var(--gold)') + dot(370,95,8,'var(--gold)') +
+    sq(320,95,14,'var(--turf)') +
+    dot(200,108,7,'var(--ink)') +
+    dot(200,140,8,'var(--gold)') +
+    dot(200,172,8,'var(--gold)')
+  ),
+  off_shotgun: offField(
+    [30,80].map(x=>dot(x,95,8,'var(--gold)')).join('') +
+    [320,370].map(x=>dot(x,95,8,'var(--gold)')).join('') +
+    dot(200,150,7,'var(--ink)') +
+    dot(165,152,8,'var(--gold)')
+  ),
+  off_singleback: offField(
+    [30,80,370].map(x=>dot(x,95,8,'var(--gold)')).join('') +
+    sq(320,95,14,'var(--turf)') +
+    dot(200,108,7,'var(--ink)') +
+    dot(190,150,8,'var(--gold)')
+  ),
+  off_pistol: offField(
+    [40,80,370].map(x=>dot(x,95,8,'var(--gold)')).join('') +
+    sq(320,95,14,'var(--turf)') +
+    dot(200,125,7,'var(--ink)') +
+    dot(200,165,8,'var(--gold)')
+  ),
+  off_empty: offField(
+    [15,60,340,385].map(x=>dot(x,95,8,'var(--gold)')).join('') +
+    sq(320,95,14,'var(--turf)') +
+    dot(200,140,7,'var(--ink)')
+  ),
+  off_wildcat: offField(
+    [40,370].map(x=>dot(x,95,8,'var(--gold)')).join('') +
+    sq(320,95,14,'var(--turf)') +
+    dot(200,112,8,'var(--stamp)') +
+    dot(165,145,8,'var(--gold)') +
+    dot(255,120,8,'var(--gold)')
+  ),
+};
+
+// ---------- App state ----------
+let playerName = '';
+let playerEmail = '';
+let order = [];
+let cursor = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+let timeLeft = TIME_LIMIT_SECONDS;
+let timerHandle = null;
+let ended = false;
+
+const panel = document.getElementById('panel');
+const clockbar = document.getElementById('clockbar');
+const clockDigits = document.getElementById('clockDigits');
+const clockFill = document.getElementById('clockFill');
+const sectionLabel = document.getElementById('sectionLabel');
+
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+// Stratified pacing: distribute each section's questions round-robin (sorted by
+// difficulty) across TIER_COUNT blocks, so every player sees the same category
+// and difficulty mix at the same point in the clock -- only the order within
+// each block is randomized per player.
+function buildTieredOrder(){
+  const bySection = {};
+  QUESTIONS.forEach((q,i)=>{ (bySection[q.section] = bySection[q.section] || []).push(i); });
+  const tiers = Array.from({length:TIER_COUNT}, ()=>[]);
+  Object.values(bySection).forEach(indices=>{
+    const sorted = indices.slice().sort((a,b)=>QUESTIONS[a].difficulty-QUESTIONS[b].difficulty);
+    sorted.forEach((qi,pos)=>{ tiers[pos % TIER_COUNT].push(qi); });
+  });
+  let out = [];
+  tiers.forEach(t=>{ out = out.concat(shuffle(t)); });
+  return out;
+}
+
+function fmtTime(s){
+  const m = Math.floor(s/60);
+  const sec = s%60;
+  return `${m}:${sec.toString().padStart(2,'0')}`;
+}
+
+async function apiGet(action, params){
+  const qs = new URLSearchParams(Object.assign({action}, params||{})).toString();
+  try{
+    const res = await fetch(`${API_BASE_URL}?${qs}`);
+    return await res.json();
+  }catch(e){ return null; }
+}
+
+async function apiPost(payload){
+  try{
+    // Sent without an explicit Content-Type so the browser treats this as a
+    // "simple request" and skips a CORS preflight, which Apps Script web apps
+    // don't handle. Apps Script parses the JSON body regardless.
+    const res = await fetch(API_BASE_URL, { method:'POST', body: JSON.stringify(payload) });
+    return await res.json();
+  }catch(e){ return { ok:false, error:'network' }; }
+}
+
+async function getWindow(){
+  return await apiGet('window');
+}
+
+async function getAllowlist(){
+  const r = await apiGet('allowlist');
+  return (r && r.emails) ? r.emails : [];
+}
+
+// ---------- Intro / lock / window screen ----------
+async function renderIntro(){
+  clockbar.style.display='none';
+  const win = await getWindow();
+  const allowlist = await getAllowlist();
+  const now = Date.now();
+  let gate = 'open';
+  let windowMsg = '';
+  if(win){
+    if(now < win.startAt){
+      gate = 'not_yet';
+      windowMsg = `<div class="rules">TESTING WINDOW OPENS AT ${new Date(win.startAt).toLocaleTimeString()}. Come back then.</div>`;
+    } else if(now > win.endAt){
+      gate = 'closed';
+      windowMsg = `<div class="rules">TESTING WINDOW HAS CLOSED. Contact the commissioner if you haven\u2019t taken the test yet.</div>`;
+    } else {
+      windowMsg = `<div class="rules">TESTING WINDOW CLOSES AT ${new Date(win.endAt).toLocaleTimeString()}.</div>`;
+    }
+  }
+  const allowlistMsg = allowlist.length
+    ? `<div class="rules">ONLY PRE-APPROVED OWNER EMAILS MAY TAKE THIS TEST.</div>`
+    : '';
+
+  panel.innerHTML = `
+    <p class="intro-copy">A pool of <b>${QUESTIONS.length} questions</b> across <b>Aptitude</b>, <b>Football IQ</b>, and <b>Film Study</b> (offense &amp; defense formations). You get <b>${fmtTime(TIME_LIMIT_SECONDS)}</b> on the clock \u2014 nobody is expected to finish the whole set.</p>
+    <p class="intro-copy">Questions come in a different random order for every owner, so no shouting out answers. Once you tap an answer it locks in and you move on \u2014 no going back.</p>
+    <label for="nameInput" class="field-label">Owner Name</label>
+    <input type="text" id="nameInput" placeholder="Type your full name" autocomplete="off" ${gate!=='open'?'disabled':''}>
+    <label for="emailInput" class="field-label">Owner Email</label>
+    <input type="text" id="emailInput" placeholder="you@email.com" autocomplete="off" ${gate!=='open'?'disabled':''}>
+    ${allowlistMsg}
+    ${windowMsg}
+    <div class="rules">HIGHEST SCORE &rarr; EARLIEST PICK (2 THRU 12)<br>ONE ATTEMPT PER EMAIL &mdash; NO RETRIES<br>NO LOOKING THINGS UP &mdash; HONOR SYSTEM<br>TIES BROKEN BY LEAGUE COMMISSIONER</div>
+    <div class="nav-row">
+      <span class="count">${QUESTIONS.length} questions &middot; ${fmtTime(TIME_LIMIT_SECONDS)} on the clock</span>
+      <button class="primary" id="startBtn" disabled>${gate==='open' ? 'Start the Clock' : 'Unavailable'}</button>
+    </div>
+    <div class="locked-msg" id="lockMsg"></div>`;
+
+  const nameInput = document.getElementById('nameInput');
+  const emailInput = document.getElementById('emailInput');
+  const btn = document.getElementById('startBtn');
+  if(gate==='open'){
+    const checkReady = ()=>{ btn.disabled = nameInput.value.trim().length===0 || emailInput.value.trim().length===0; };
+    nameInput.addEventListener('input', checkReady);
+    emailInput.addEventListener('input', checkReady);
+    emailInput.addEventListener('keydown',e=>{if(e.key==='Enter' && !btn.disabled) tryBegin();});
+    btn.addEventListener('click', tryBegin);
+    nameInput.focus();
+  }
+}
+
+function isValidEmail(email){
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function tryBegin(){
+  const nameInput = document.getElementById('nameInput');
+  const emailInput = document.getElementById('emailInput');
+  const btn = document.getElementById('startBtn');
+  const name = nameInput.value.trim();
+  const email = emailInput.value.trim().toLowerCase();
+  const lockMsg = document.getElementById('lockMsg');
+  if(!name || !email) return;
+  if(!isValidEmail(email)){
+    lockMsg.textContent = 'That doesn\u2019t look like a valid email address.';
+    return;
+  }
+  btn.disabled = true;
+  lockMsg.textContent = 'Checking\u2026';
+  const result = await apiPost({ action:'start', name, email });
+  if(!result || result.ok !== true){
+    btn.disabled = false;
+    if(result && result.reason === 'not_allowed'){
+      lockMsg.textContent = 'This email isn\u2019t on the approved owner list. Contact the commissioner.';
+    } else if(result && result.reason === 'locked'){
+      lockMsg.textContent = 'This email already has an attempt on record. Only one attempt per owner \u2014 ask your commissioner to clear it if this is a mistake.';
+    } else {
+      lockMsg.textContent = 'Couldn\u2019t reach the server \u2014 check your connection and try again.';
+    }
+    return;
+  }
+  lockMsg.textContent = '';
+  playerName = name;
+  playerEmail = email;
+  begin();
+}
+
+function begin(){
+  order = buildTieredOrder();
+  cursor = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  timeLeft = TIME_LIMIT_SECONDS;
+  ended = false;
+  clockbar.style.display='block';
+  updateClockUI();
+  timerHandle = setInterval(tick, 1000);
+  renderQuestion();
+}
+
+function tick(){
+  if(ended) return;
+  timeLeft--;
+  updateClockUI();
+  if(timeLeft <= 0){
+    timeLeft = 0;
+    updateClockUI();
+    finishTest();
+  }
+}
+
+function updateClockUI(){
+  clockDigits.textContent = fmtTime(Math.max(timeLeft,0));
+  const pct = Math.max(0,(timeLeft/TIME_LIMIT_SECONDS)*100);
+  clockFill.style.width = pct+'%';
+  const urgent = timeLeft <= 30;
+  clockDigits.classList.toggle('urgent', urgent);
+  clockFill.classList.toggle('urgent', urgent);
+}
+
+function renderQuestion(){
+  if(ended) return;
+  if(cursor >= order.length){ finishTest(); return; }
+  const qIndex = order[cursor];
+  const q = QUESTIONS[qIndex];
+  const meta = SECTION_META[q.section];
+  sectionLabel.textContent = `${meta.label.toUpperCase()} \u00b7 Q${cursor+1} of ${order.length}`;
+  const svgBlock = q.svg ? `<div class="svg-wrap">${FORMATIONS[q.svg]}</div>` : '';
+  panel.innerHTML = `
+    <span class="section-tag ${meta.cls}">${meta.label}</span>
+    <h2 class="prompt">${q.prompt}</h2>
+    ${svgBlock}
+    <div class="options" id="opts">
+      ${q.options.map((o,i)=>`<button class="opt" data-i="${i}">${o}</button>`).join('')}
+    </div>
+    <div class="nav-row">
+      <span class="count">Answered: ${answers.filter(a=>a!==null).length} / ${QUESTIONS.length}</span>
+    </div>`;
+  const optsEl = document.getElementById('opts');
+  optsEl.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      if(ended) return;
+      optsEl.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+      btn.classList.add('selected');
+      answers[qIndex] = parseInt(btn.dataset.i,10);
+      setTimeout(()=>{ cursor++; renderQuestion(); }, 140);
+    });
+  });
+}
+
+function scoreBySection(){
+  const totals={aptitude:{c:0,t:0}, iq:{c:0,t:0}, film:{c:0,t:0}};
+  QUESTIONS.forEach((q,i)=>{
+    totals[q.section].t++;
+    if(answers[i]===q.answer) totals[q.section].c++;
+  });
+  return totals;
+}
+
+function gradeFor(pct){
+  if(pct>=85) return {letter:'A+', proj:'1st Round Talent'};
+  if(pct>=70) return {letter:'A', proj:'1st Round Talent'};
+  if(pct>=55) return {letter:'B', proj:'Day 2 Steal'};
+  if(pct>=40) return {letter:'C', proj:'Day 3 Depth Piece'};
+  if(pct>=25) return {letter:'D', proj:'Priority Free Agent'};
+  return {letter:'F', proj:'Camp Body / UDFA'};
+}
+
+function finishTest(){
+  if(ended) return;
+  ended = true;
+  clearInterval(timerHandle);
+  renderResults();
+}
+
+async function renderResults(){
+  sectionLabel.textContent = 'REPORT CARD';
+  clockFill.style.width = '0%';
+  const totals = scoreBySection();
+  const totalCorrect = Object.values(totals).reduce((s,v)=>s+v.c,0);
+  const totalQ = QUESTIONS.length;
+  const catPcts = Object.values(totals).map(t=>(t.c/t.t)*100);
+  const compositePct = Math.round(catPcts.reduce((a,b)=>a+b,0)/catPcts.length);
+  const grade = gradeFor(compositePct);
+  const reached = answers.filter(a=>a!==null).length;
+
+  panel.innerHTML = `
+    <div class="grade-block">
+      <div class="grade-badge">${grade.letter}</div>
+      <div class="grade-meta">
+        <div class="proj">Draft Projection</div>
+        <div class="proj-value">${grade.proj}</div>
+        <div class="score-line">${totalCorrect} / ${totalQ} correct &middot; ${compositePct}% composite</div>
+      </div>
+    </div>
+    <div class="stat-strip">
+      <div><b>${reached}</b>reached</div>
+      <div><b>${totalQ - reached}</b>never seen</div>
+      <div><b>${fmtTime(TIME_LIMIT_SECONDS)}</b>clock limit</div>
+    </div>
+    ${Object.entries(SECTION_META).map(([key,meta])=>{
+      const t = totals[key];
+      const p = Math.round((t.c/t.t)*100);
+      return `<div class="cat-row">
+        <div class="lbl"><span>${meta.label}</span><span>${t.c}/${t.t}</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${p}%"></div></div>
+      </div>`;
+    }).join('')}
+    <div class="board">
+      <h3>League Draft Board</h3>
+      <div id="boardRows"></div>
+      <div class="board-status" id="boardStatus">Posting your score&hellip;</div>
+    </div>`;
+
+  await postScore(playerName, playerEmail, totalCorrect, totalQ, compositePct, reached);
+  await loadBoard();
+}
+
+async function postScore(name, email, correct, total, compositePct, reached){
+  const statusEl = document.getElementById('boardStatus');
+  const result = await apiPost({ action:'submit', name, email, correct, total, compositePct, reached });
+  if(statusEl){
+    statusEl.textContent = (result && result.ok)
+      ? 'Score posted to the shared draft board.'
+      : 'Could not post automatically \u2014 report your score to the commissioner manually.';
+  }
+}
+
+async function loadBoard(){
+  const rowsEl = document.getElementById('boardRows');
+  if(!rowsEl) return;
+  const result = await apiGet('board');
+  const entries = (result && result.entries) ? result.entries : null;
+  if(!entries){
+    rowsEl.innerHTML = `<div class="board-status">Draft board unavailable right now.</div>`;
+    return;
+  }
+  if(entries.length===0){
+    rowsEl.innerHTML = `<div class="board-status">No scores posted yet.</div>`;
+    return;
+  }
+  rowsEl.innerHTML = entries.map((e,i)=>`
+    <div class="board-row">
+      <span class="rank">${i+1}</span>
+      <span class="nm">${e.name}</span>
+      <span class="sc">${e.correct}/${e.total} &middot; ${e.compositePct}%</span>
+    </div>`).join('');
+}
+
+// ---------- Commissioner panel (?admin=1) ----------
+async function renderAdmin(){
+  clockbar.style.display='none';
+  panel.innerHTML = `
+    <span class="section-tag" style="background:var(--danger);">Commissioner Panel</span>
+    <h2 class="prompt">Test Admin</h2>
+    <div class="rules">Only reachable via ?admin=1 on the link. Don\u2019t share this version with owners.</div>
+
+    <div class="admin-block">
+      <div class="field-label">Testing window</div>
+      <div class="row2">
+        <input type="number" id="leadMin" placeholder="Opens in (min)" value="0">
+        <input type="number" id="durMin" placeholder="Duration (min)" value="30">
+      </div>
+      <button class="primary" id="setWindowBtn">Set Testing Window</button>
+      <button class="primary" id="clearWindowBtn" style="background:var(--graphite);margin-left:8px;">Clear Window</button>
+      <div class="board-status" id="windowStatus"></div>
+    </div>
+
+    <div class="admin-block" style="border-top:1px dashed var(--line);padding-top:18px;">
+      <div class="field-label">Owner email allowlist (one per line, optional)</div>
+      <textarea id="allowlistInput" rows="6" placeholder="owner1@email.com&#10;owner2@email.com" style="width:100%;font-family:'IBM Plex Mono',monospace;font-size:14px;padding:10px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);margin:6px 0;"></textarea>
+      <button class="primary" id="saveAllowlistBtn">Save Allowlist</button>
+      <button class="primary" id="clearAllowlistBtn" style="background:var(--graphite);margin-left:8px;">Clear Allowlist</button>
+      <div class="board-status" id="allowlistStatus">Leave empty to let anyone with the link take the test.</div>
+    </div>
+
+    <div class="admin-block" style="border-top:1px dashed var(--line);padding-top:18px;">
+      <div class="field-label">Clear one owner\u2019s lock / score (by email)</div>
+      <input type="text" id="clearNameInput" placeholder="owner@email.com">
+      <button class="primary" id="clearNameBtn">Clear</button>
+      <div class="board-status" id="clearNameStatus"></div>
+    </div>
+
+    <div class="admin-block" style="border-top:1px dashed var(--line);padding-top:18px;">
+      <button class="primary" id="clearAllBtn" style="background:var(--danger);">Reset Entire Board</button>
+      <div class="board-status" id="clearAllStatus"></div>
+    </div>
+
+    <div class="board">
+      <h3>Current Draft Board</h3>
+      <div id="boardRows"></div>
+    </div>`;
+
+  const currentAllowlist = await getAllowlist();
+  document.getElementById('allowlistInput').value = currentAllowlist.join('\n');
+
+  document.getElementById('saveAllowlistBtn').addEventListener('click', async ()=>{
+    const raw = document.getElementById('allowlistInput').value;
+    const emails = raw.split('\n').map(e=>e.trim().toLowerCase()).filter(e=>e.length && isValidEmail(e));
+    const result = await apiPost({ action:'saveAllowlist', emails, adminKey: ADMIN_PASSCODE });
+    document.getElementById('allowlistStatus').textContent = (result && result.ok)
+      ? `Saved ${emails.length} approved email(s).`
+      : 'Could not save \u2014 check the API_BASE_URL and try again.';
+  });
+  document.getElementById('clearAllowlistBtn').addEventListener('click', async ()=>{
+    const result = await apiPost({ action:'clearAllowlist', adminKey: ADMIN_PASSCODE });
+    document.getElementById('allowlistInput').value = '';
+    document.getElementById('allowlistStatus').textContent = (result && result.ok)
+      ? 'Allowlist cleared \u2014 anyone with the link can take the test.'
+      : 'Could not clear \u2014 check the API_BASE_URL and try again.';
+  });
+
+  document.getElementById('setWindowBtn').addEventListener('click', async ()=>{
+    const lead = parseFloat(document.getElementById('leadMin').value) || 0;
+    const dur = parseFloat(document.getElementById('durMin').value) || 30;
+    const startAt = Date.now() + lead*60000;
+    const endAt = startAt + dur*60000;
+    const result = await apiPost({ action:'setWindow', startAt, endAt, adminKey: ADMIN_PASSCODE });
+    document.getElementById('windowStatus').textContent = (result && result.ok)
+      ? `Window set: opens ${new Date(startAt).toLocaleTimeString()}, closes ${new Date(endAt).toLocaleTimeString()}.`
+      : 'Could not set window \u2014 check the API_BASE_URL and try again.';
+  });
+  document.getElementById('clearWindowBtn').addEventListener('click', async ()=>{
+    const result = await apiPost({ action:'clearWindow', adminKey: ADMIN_PASSCODE });
+    document.getElementById('windowStatus').textContent = (result && result.ok)
+      ? 'Window cleared \u2014 testing open anytime.'
+      : 'Could not clear \u2014 check the API_BASE_URL and try again.';
+  });
+  document.getElementById('clearNameBtn').addEventListener('click', async ()=>{
+    const email = document.getElementById('clearNameInput').value.trim().toLowerCase();
+    if(!email) return;
+    const result = await apiPost({ action:'clearEmail', email, adminKey: ADMIN_PASSCODE });
+    document.getElementById('clearNameStatus').textContent = (result && result.ok)
+      ? `Cleared any lock/score for "${email}".`
+      : 'Could not clear \u2014 check the API_BASE_URL and try again.';
+    loadBoard();
+  });
+  document.getElementById('clearAllBtn').addEventListener('click', async ()=>{
+    if(!confirm('This wipes every score and lock for everyone. Are you sure?')) return;
+    const result = await apiPost({ action:'resetAll', adminKey: ADMIN_PASSCODE });
+    document.getElementById('clearAllStatus').textContent = (result && result.ok)
+      ? 'Board and locks reset.'
+      : 'Reset failed \u2014 check the API_BASE_URL and try again.';
+    loadBoard();
+  });
+
+  loadBoard();
+}
+
+function showPasscodeGate(){
+  clockbar.style.display='none';
+  panel.innerHTML = `
+    <p class="intro-copy">Commissioner access.</p>
+    <label for="passcodeInput" class="field-label">Passcode</label>
+    <input type="text" id="passcodeInput" placeholder="Enter passcode" autocomplete="off">
+    <div class="nav-row">
+      <span class="count"></span>
+      <button class="primary" id="passcodeBtn">Enter</button>
+    </div>
+    <div class="locked-msg" id="passcodeMsg"></div>`;
+  const input = document.getElementById('passcodeInput');
+  const btn = document.getElementById('passcodeBtn');
+  const tryEnter = ()=>{
+    if(input.value === ADMIN_PASSCODE){ renderAdmin(); }
+    else{ document.getElementById('passcodeMsg').textContent = 'Incorrect passcode.'; }
+  };
+  btn.addEventListener('click', tryEnter);
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') tryEnter(); });
+  input.focus();
+}
+
+(async function init(){
+  const adminLink = document.getElementById('adminLink');
+  if(adminLink){
+    adminLink.addEventListener('click', (e)=>{ e.preventDefault(); showPasscodeGate(); });
+  }
+  const params = new URLSearchParams(location.search);
+  if(params.get('admin')){ await renderAdmin(); return; }
+  await renderIntro();
+})();
+</script>
+</body>
+</html>
